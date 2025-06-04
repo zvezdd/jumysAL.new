@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Градиентная заливка для логотипа -->
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0056C7" />
+      <stop offset="100%" stop-color="#0070F3" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Фон логотипа - закругленный прямоугольник -->
+  <rect x="10" y="10" width="100" height="100" rx="20" fill="url(#logoGradient)" />
+  
+  <!-- Буква J - стилизованная -->
+  <path d="M45 30H75C77.7614 30 80 32.2386 80 35V45C80 47.7614 77.7614 50 75 50H55V80C55 82.7614 52.7614 85 50 85H40C37.2386 85 35 82.7614 35 80V35C35 32.2386 37.2386 30 40 30H45Z" 
+        fill="white" />
+  
+  <!-- Точка над буквой J -->
+  <circle cx="75" cy="35" r="8" fill="white" />
+  
+  <!-- Стилизованные линии, символизирующие "AL" -->
+  <path d="M45 60H75" stroke="white" stroke-width="6" stroke-linecap="round" />
+  <path d="M55 50V85" stroke="white" stroke-width="6" stroke-linecap="round" />
+  <path d="M65 50V85" stroke="white" stroke-width="6" stroke-linecap="round" />
+</svg> 
