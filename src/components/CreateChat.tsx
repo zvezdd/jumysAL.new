@@ -42,15 +42,12 @@ const CreateChat: React.FC<CreateChatProps> = ({
       setError(null);
       console.log("Creating chat with recipient:", recipientId);
 
-      // Check if recipient exists
       const recipientDoc = await getDoc(doc(db, 'users', recipientId));
       if (!recipientDoc.exists()) {
         console.error("Recipient not found:", recipientId);
         throw new Error('Пользователь не найден');
       }
-      console.log("Recipient found:", recipientDoc.data());
 
-      // Check if a chat already exists between these users
       const existingChatsQuery = query(
         collection(db, 'chats'),
         where('participants', 'array-contains', user.uid)
@@ -63,13 +60,10 @@ const CreateChat: React.FC<CreateChatProps> = ({
         const chatData = doc.data();
         if (chatData.participants.includes(recipientId)) {
           existingChatId = doc.id;
-          console.log("Found existing chat:", existingChatId);
         }
       });
 
       if (existingChatId) {
-        // Chat already exists, navigate to it
-        console.log("Navigating to existing chat:", existingChatId);
         if (onChatCreated) {
           onChatCreated(existingChatId);
         } else {
@@ -79,9 +73,16 @@ const CreateChat: React.FC<CreateChatProps> = ({
         return;
       }
 
-      // Create a new chat
-      console.log("Creating new chat between", user.uid, "and", recipientId);
-      const chatData = {
+      // Типизированный объект chatData
+      const chatData: {
+        participants: string[];
+        createdAt: any;
+        updatedAt: any;
+        lastMessage: string;
+        unreadCount: { [userId: string]: number };
+        postId?: string;
+        postTitle?: string;
+      } = {
         participants: [user.uid, recipientId],
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -92,7 +93,6 @@ const CreateChat: React.FC<CreateChatProps> = ({
         }
       };
 
-      // Add reference to post if applicable
       if (postId) {
         chatData.postId = postId;
         chatData.postTitle = postTitle || '';
@@ -102,7 +102,6 @@ const CreateChat: React.FC<CreateChatProps> = ({
       const chatRef = await addDoc(collection(db, 'chats'), chatData);
       console.log("Chat created with ID:", chatRef.id);
 
-      // If first message should be sent right away
       if (postId && postTitle) {
         const messageData = {
           text: `Здравствуйте! Я заинтересован(-а) в вакансии "${postTitle}"`,
@@ -112,47 +111,34 @@ const CreateChat: React.FC<CreateChatProps> = ({
           type: 'text'
         };
 
-        console.log("Sending first message");
-        const messageRef = await addDoc(
-          collection(db, 'chats', chatRef.id, 'messages'), 
-          messageData
-        );
-        console.log("First message sent with ID:", messageRef.id);
+        await addDoc(collection(db, 'chats', chatRef.id, 'messages'), messageData);
 
-        // Update chat with the last message
         await updateDoc(doc(db, 'chats', chatRef.id), {
           lastMessage: messageData.text,
           updatedAt: serverTimestamp(),
           [`unreadCount.${recipientId}`]: 1
         });
-        console.log("Chat document updated with last message");
       }
 
       setLoading(false);
-      
+
       if (onChatCreated) {
         onChatCreated(chatRef.id);
       } else {
-        console.log("Navigating to new chat:", chatRef.id);
         navigate(`/chat/${chatRef.id}`);
       }
     } catch (err) {
       console.error('Error creating chat:', err);
       let errorMessage = 'Не удалось создать чат. Пожалуйста, попробуйте позже.';
-      
-      if (err instanceof Error) {
-        if (err.message === 'Пользователь не найден') {
-          errorMessage = 'Пользователь не найден. Возможно, аккаунт был удален.';
-        }
-        // Add more specific error handling as needed
-        console.error('Error details:', err.message);
+
+      if (err instanceof Error && err.message === 'Пользователь не найден') {
+        errorMessage = 'Пользователь не найден. Возможно, аккаунт был удален.';
       }
-      
+
       setError(errorMessage);
       setLoading(false);
     }
   };
-
   return (
     <>
       <button

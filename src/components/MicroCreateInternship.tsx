@@ -168,8 +168,8 @@ const MicroCreateInternship = () => {
         employerId: user?.uid,
         employer: {
           id: user?.uid,
-          name: userData?.displayName || userData?.name,
-          company: userData?.company || 'Компания',
+          name: userData?.displayName,
+          company: 'Компания',
           photoURL: userData?.photoURL
         },
         xpReward,

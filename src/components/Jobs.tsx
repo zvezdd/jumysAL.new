@@ -434,12 +434,12 @@ const Jobs = () => {
               console.log("All posts fetched:", allPosts.length);
               
               // ИЗМЕНЕНИЕ 2: Фильтруем программно, чтобы видеть какие посты есть, но не проходят фильтр
-              const jobsData = allPosts.filter(post => {
-                // Включаем вакансии с type = 'job' или без указания типа (для обратной совместимости)
-                const postType = post.type;
-                console.log(`Post ${post.id} has type: ${postType}`);
-                return postType === 'job' || postType === undefined || postType === null;
-              }).map(post => ensurePostType(post)); // Используем функцию для обеспечения правильной типизации
+            const jobsData = (allPosts as { id: string; type?: string | null }[]).filter(post => {
+  const postType = post.type;
+  console.log(`Post ${post.id} has type: ${postType}`);
+  return postType === 'job' || postType === undefined || postType === null;
+}).map(post => ensurePostType(post));
+// Используем функцию для обеспечения правильной типизации
               
               console.log("Filtered job posts:", jobsData.length);
               

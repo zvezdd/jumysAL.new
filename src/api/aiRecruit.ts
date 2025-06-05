@@ -195,7 +195,7 @@ export const getMatchedCandidates = async (jobId: string): Promise<MatchedCandid
     
     const matches = matchesSnapshot.docs
       .map(doc => doc.data() as MatchedCandidate)
-      .filter(match => !match.deleted)
+      .filter(match => !('deleted' in match) || !match.deleted) // если не хочешь менять интерфейс
       .sort((a, b) => b.totalScore - a.totalScore);
     
     return matches;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase';
-import { collection, query, where, getDocs, addDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, addDoc, QueryDocumentSnapshot } from 'firebase/firestore';
 import { Post, UserData } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -28,10 +28,13 @@ const AIMatchStudents: React.FC<AIMatchStudentsProps> = ({ post, onClose }) => {
           where('role', '==', 'student')
         );
         const studentsSnapshot = await getDocs(studentsQuery);
-        
+
         const students = studentsSnapshot.docs
-          .map(doc => ({ id: doc.id, ...doc.data() } as UserData))
-          .filter(student => {
+          .map((doc: QueryDocumentSnapshot<UserData>) => ({
+            id: doc.id,
+            ...doc.data(),
+          } as UserData))
+          .filter((student) => {
             // Filter by grade range if it exists
             const studentGrade = student.grade || 0;
             if (!post.gradeRange) return true; // If no grade range is specified, include all students
@@ -61,9 +64,9 @@ const AIMatchStudents: React.FC<AIMatchStudentsProps> = ({ post, onClose }) => {
     let score = 0;
 
     // Match by skills
-    if (student.skills && post.requiredSkills) {
-      const matchingSkills = student.skills.filter(skill => 
-        post.requiredSkills.includes(skill)
+    if (student.skills && post.skillsRequired) {
+      const matchingSkills = student.skills.filter((skill) =>
+        post.skillsRequired!.includes(skill)
       );
       score += matchingSkills.length * 10;
     }
@@ -71,7 +74,7 @@ const AIMatchStudents: React.FC<AIMatchStudentsProps> = ({ post, onClose }) => {
     // Match by experience
     if (student.experience && post.requirements) {
       const hasRelevantExperience = student.experience.toLowerCase().includes(
-        post.requirements.toLowerCase()
+        post.requirements.join(' ').toLowerCase()
       );
       if (hasRelevantExperience) score += 20;
     }
@@ -79,7 +82,7 @@ const AIMatchStudents: React.FC<AIMatchStudentsProps> = ({ post, onClose }) => {
     // Match by education
     if (student.education && post.requirements) {
       const hasRelevantEducation = student.education.toLowerCase().includes(
-        post.requirements.toLowerCase()
+        post.requirements.join(' ').toLowerCase()
       );
       if (hasRelevantEducation) score += 15;
     }
@@ -98,8 +101,8 @@ const AIMatchStudents: React.FC<AIMatchStudentsProps> = ({ post, onClose }) => {
         createdAt: new Date(),
         lastMessage: null,
         unreadCount: {
-          [student.uid]: 1
-        }
+          [student.uid]: 1,
+        },
       });
 
       // Add initial message
@@ -107,7 +110,7 @@ const AIMatchStudents: React.FC<AIMatchStudentsProps> = ({ post, onClose }) => {
         text: `Interested in your profile for ${post.title}`,
         senderId: user.uid,
         timestamp: new Date(),
-        read: false
+        read: false,
       });
 
       // Navigate to chat
@@ -164,7 +167,7 @@ const AIMatchStudents: React.FC<AIMatchStudentsProps> = ({ post, onClose }) => {
           </p>
         ) : (
           <div className="space-y-4">
-            {matchedStudents.map(student => (
+            {matchedStudents.map((student) => (
               <div
                 key={student.uid}
                 className="bg-gray-700 rounded-lg p-4"
@@ -213,4 +216,4 @@ const AIMatchStudents: React.FC<AIMatchStudentsProps> = ({ post, onClose }) => {
   );
 };
 
-export default AIMatchStudents; 
+export default AIMatchStudents;

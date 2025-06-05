@@ -11,7 +11,7 @@ export interface Post {
   skills: string[];
   postedDate: Date | string;
   companyLogo?: string;
-  userId?: string; // ID пользователя, разместившего вакансию
+  userId?: string;
   user?: {
     id: string;
     displayName?: string;
@@ -27,45 +27,33 @@ export interface Post {
   authorId?: string;
   createdAt?: Date;
   status?: string;
-  // AI Matching fields
   aiMatching?: boolean;
   skillsRequired?: string[];
   minExperience?: number;
   preferredUniversities?: string[];
   otherCriteria?: string;
-  // Additional fields used in components
   company?: string;
   city?: string;
   category?: string;
   responsibilities?: string[];
-}
-
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  avatar?: string;
-  role: 'user' | 'admin';
-  savedPosts?: string[];
-}
-
-export interface AuthState {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
+  gradeRange?: {
+    // Added to match code usage
+    min: number;
+    max: number;
+  };
 }
 
 export interface UserData {
-  id?: string; // Optional for backward compatibility
-  uid: string; // This is the primary identifier from Firebase
+  id?: string;
+  uid: string;
   email: string;
-  name?: string; // Optional for backward compatibility
+  name?: string;
   displayName: string;
   role: 'student' | 'business';
   grade?: number;
   skills?: string[];
   interests?: string[];
-  level?: number; // Make this optional with a default
+  level?: number;
   xp?: number;
   savedPosts?: string[];
   education?: string;
@@ -107,14 +95,29 @@ export interface UserData {
   companyDescription?: string;
   points?: number;
   totalXp?: number;
-  status?: string; // Онлайн, оффлайн, и т.д.
-  // Additional fields required by components
+  status?: string;
   languages?: string[] | string;
   achievements?: string[] | string;
   portfolio?: string[] | string;
   field?: string;
   age?: number;
-  resumes?: any[]; // Collection of generated resumes
+  resumes?: any[];
+}
+
+// Keep other interfaces (User, AuthState) unchanged
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  avatar?: string;
+  role: 'user' | 'admin';
+  savedPosts?: string[];
+}
+
+export interface AuthState {
+  user: User | null;
+  loading: boolean;
+  error: string | null;
 }
 
 export interface Filters {
